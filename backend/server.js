@@ -2,11 +2,8 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
-
 import authRoutes from './routes/auth.js';
 import donationRoutes from './routes/donations.js';
-import matchRoutes from './routes/matches.js';
-import routeRoutes from './routes/routes.js';
 
 dotenv.config();
 
@@ -19,8 +16,6 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/donations', donationRoutes);
-app.use('/api/matches', matchRoutes);
-app.use('/api/routes', routeRoutes);
 
 // Connect to DB
 mongoose

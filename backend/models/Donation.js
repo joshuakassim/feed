@@ -1,5 +1,19 @@
 import mongoose from 'mongoose';
 
+/**
+ * Mongoose schema for a Donation listing.
+ *
+ * Fields:
+ * - donor: ObjectId reference to the User who created the donation (required)
+ * - title: Title of the donation listing (required, trimmed)
+ * - imageUrl: Optional image URL for the donation
+ * - quantity: Quantity of the donation (required, stored as string for flexibility)
+ * - location: Object containing address (string), latitude (number, required), and longitude (number, required)
+ * - expiryDate: Date when the donation expires (required)
+ * - status: Current status of the donation ('available' or 'claimed', defaults to 'available')
+ * - claimCode: Unique code for claiming the donation (auto-generated, 6 uppercase alphanumeric characters)
+ * - timestamps: Automatically managed createdAt and updatedAt fields
+ */
 const donationSchema = new mongoose.Schema(
   {
     donor: {
@@ -12,10 +26,9 @@ const donationSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    description: String,
     imageUrl: String,
     quantity: {
-      type: String, // e.g. "50kg", "20 crates"
+      type: String,
       required: true,
     },
     location: {
@@ -29,17 +42,22 @@ const donationSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: [
-        'available',
-        'accepted',
-        'pending_pickup',
-        'picked_up',
-        'delivered',
-      ],
+      enum: ['available', 'claimed'],
       default: 'available',
+    },
+    claimCode: {
+      type: String,
+      default: function () {
+        // Generates a random 6-character uppercase alphanumeric code
+        return Math.random().toString(36).substring(2, 8).toUpperCase();
+      },
     },
   },
   { timestamps: true }
 );
 
+/**
+ * Donation model for MongoDB.
+ * Represents a food donation listing created by a donor.
+ */
 export default mongoose.model('Donation', donationSchema);
