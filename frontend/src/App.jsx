@@ -1,34 +1,48 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from '../pages/Login';
-import Dashboard from '../pages/Dashboard';
-import Donations from '../pages/Donations';
-import Matches from '../pages/Matches';
-import CharityView from '../pages/CharityView';
+import Register from '../pages/Register';
+import RecipientDashboard from '../pages/RecipientDashboard';
 import ProtectedRoute from '../components/ProtectedRoute';
+import DonorDashboard from '../pages/DonorDashboard';
+import { useEffect } from 'react';
 
+/**
+ * App Component
+ *
+ * Main entry point for the frontend application.
+ * Sets up client-side routing using react-router-dom.
+ * Defines routes for login, registration, donor dashboard, and recipient dashboard.
+ * Uses ProtectedRoute to restrict access to dashboard routes based on user role and authentication.
+ * Sets the document title on mount.
+ *
+ * Routes:
+ * - /login: Login page
+ * - /register: Registration page
+ * - /donations: Donor dashboard (protected, donor only)
+ * - /charity: Recipient dashboard (protected, recipient only)
+ *
+ * Usage:
+ *   <App />
+ */
 function App() {
-  const token = localStorage.getItem('token');
+  // Set the browser tab title when the component mounts
+  useEffect(() => {
+    document.title = '🌍 Feed - Fighting Food Waste Together';
+  }, []);
+
   return (
-    <BrowserRouter>
+    <>
       <Routes>
+        {/* Public routes */}
         <Route path='/login' element={<Login />} />
-        <Route
-          path='/'
-          element={token ? <Dashboard /> : <Navigate to='/login' />}
-        >
+        <Route path='/register' element={<Register />} />
+        {/* Protected dashboard routes */}
+        <Route path='/'>
           <Route
             path='donations'
             element={
               <ProtectedRoute role='donor'>
-                <Donations />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path='matches'
-            element={
-              <ProtectedRoute>
-                <Matches />
+                <DonorDashboard />
               </ProtectedRoute>
             }
           />
@@ -36,14 +50,13 @@ function App() {
             path='charity'
             element={
               <ProtectedRoute role='recipient'>
-                <CharityView />
+                <RecipientDashboard />
               </ProtectedRoute>
             }
           />
-          <Route index element={<Navigate to='/donations' />} />
         </Route>
       </Routes>
-    </BrowserRouter>
+    </>
   );
 }
 

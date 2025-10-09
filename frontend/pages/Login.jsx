@@ -1,16 +1,38 @@
 import { useState } from 'react';
-import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import api from '../utils/api';
 import { useNavigate } from 'react-router-dom';
 
-export default function Login() {
+/**
+ * Login Component
+ *
+ * Renders a login form for users to authenticate.
+ * Handles form state, submission, and communicates with the backend API.
+ * Stores authentication data in localStorage and navigates users based on their role.
+ * Displays toast notifications for errors.
+ *
+ * Usage:
+ *   <Login />
+ */
+const Login = () => {
+  // State variables for email and password input fields
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
+  /**
+   * Handles login form submission.
+   * Sends a POST request to the backend to authenticate the user.
+   * Stores token and user info in localStorage on success.
+   * Navigates to the appropriate dashboard based on user role.
+   * Displays a toast notification on error.
+   *
+   * @param {Object} e - Form submit event
+   */
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', {
+      const res = await api.post('auth/login', {
         email,
         password,
       });
@@ -25,7 +47,7 @@ export default function Login() {
         navigate('/');
       }
     } catch (err) {
-      console.log('Login failed:' + err.response?.data?.message || err.message);
+      toast.error(err.response?.data?.message || err.message);
     }
   };
 
@@ -53,7 +75,24 @@ export default function Login() {
         <button className='w-full bg-blue-500 text-white py-2 rounded'>
           Login
         </button>
+
+        <p className='text-sm text-gray-600 mt-4'>
+          Don't have an account?{' '}
+          <a
+            className='text-blue-500 hover:underline'
+            onClick={(e) => {
+              e.preventDefault();
+              navigate('/register');
+            }}
+          >
+            Sign Up
+          </a>
+        </p>
       </form>
+      {/* Toast notifications container */}
+      <ToastContainer pauseOnFocusLoss draggable pauseOnHover />
     </div>
   );
-}
+};
+
+export default Login;
